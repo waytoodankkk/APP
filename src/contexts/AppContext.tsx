@@ -1,3 +1,5 @@
+//frontend\src\contexts\AppContext.tsx
+
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Project, LogEntry, LogLevel, Toast } from '../types';
