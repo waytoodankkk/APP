@@ -1,0 +1,100 @@
+import React, { useState } from 'react';
+import { Profile } from '../types';
+import { PencilIcon, PlusIcon, TrashIcon } from '../../../components/IconComponents';
+
+interface ProfileManagerProps {
+    profiles: Profile[];
+    activeProfileId: string | null;
+    onAddProfile: (name: string) => void;
+    onDeleteProfile: (id: string) => void;
+    onSelectProfile: (id: string) => void;
+    onUpdateProfile: (id: string, name: string) => void;
+    onClearJobs: () => void;
+}
+
+const ProfileManager: React.FC<ProfileManagerProps> = ({
+    profiles,
+    activeProfileId,
+    onAddProfile,
+    onDeleteProfile,
+    onSelectProfile,
+    onUpdateProfile,
+    onClearJobs,
+}) => {
+    const [newProfileName, setNewProfileName] = useState('');
+    const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
+    const [editingProfileName, setEditingProfileName] = useState('');
+
+    const handleAddProfile = () => {
+        if (newProfileName.trim()) {
+            onAddProfile(newProfileName.trim());
+            setNewProfileName('');
+        }
+    };
+
+    const handleStartEdit = (profile: Profile) => {
+        setEditingProfileId(profile.id);
+        setEditingProfileName(profile.name);
+    };
+    
+    const handleCancelEdit = () => {
+        setEditingProfileId(null);
+        setEditingProfileName('');
+    };
+
+    const handleSaveEdit = () => {
+        if (editingProfileId && editingProfileName.trim()) {
+            onUpdateProfile(editingProfileId, editingProfileName.trim());
+            handleCancelEdit();
+        }
+    };
+
+    return (
+        <div className="bg-gray-800 w-full max-w-xs flex-shrink-0 p-4 flex flex-col h-full border-r border-gray-700">
+            <h2 className="text-lg font-semibold mb-4">Profiles</h2>
+            <div className="flex gap-2 mb-4">
+                <input
+                    type="text"
+                    value={newProfileName}
+                    onChange={(e) => setNewProfileName(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddProfile()}
+                    placeholder="New profile name..."
+                    className="flex-grow bg-gray-700 border border-gray-600 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                />
+                <button
+                    onClick={handleAddProfile}
+                    className="p-2 bg-brand-blue text-white rounded-md hover:bg-blue-600 transition-colors"
+                >
+                    <PlusIcon className="w-5 h-5" />
+                </button>
+            </div>
+            <ul className="flex-grow overflow-y-auto space-y-2">
+                {profiles.map(profile => (
+                    <li key={profile.id}>
+                        {editingProfileId === profile.id ? (
+                            <div className="flex items-center gap-2 p-2 rounded-md bg-gray-900">
+                                <input type="text" value={editingProfileName} onChange={(e) => setEditingProfileName(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSaveEdit()} className="flex-grow bg-gray-700 border border-gray-600 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue" autoFocus />
+                                <button onClick={handleSaveEdit} className="text-green-400 hover:text-green-300">Save</button>
+                                <button onClick={handleCancelEdit} className="text-gray-400 hover:text-gray-200">Cancel</button>
+                            </div>
+                        ) : (
+                            <div onClick={() => onSelectProfile(profile.id)} className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors ${activeProfileId === profile.id ? 'bg-brand-blue/30 text-white' : 'hover:bg-gray-700/50'}`}>
+                                <span className="truncate">{profile.name}</span>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                    <button onClick={(e) => { e.stopPropagation(); handleStartEdit(profile); }} className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-600"><PencilIcon className="w-4 h-4" /></button>
+                                    <button onClick={(e) => { e.stopPropagation(); onDeleteProfile(profile.id); }} className="text-gray-400 hover:text-red-400 p-1 rounded-full hover:bg-gray-600"><TrashIcon className="w-4 h-4" /></button>
+                                </div>
+                            </div>
+                        )}
+                    </li>
+                ))}
+            </ul>
+            <div className="mt-4 pt-4 border-t border-gray-700">
+                 <button onClick={onClearJobs} className="w-full flex items-center justify-center gap-2 text-sm text-red-400 hover:bg-red-500/10 p-2 rounded-md transition-colors">
+                    <TrashIcon className="w-5 h-5"/> Clear Jobs
+                </button>
+            </div>
+        </div>
+    );
+};
+export default ProfileManager;

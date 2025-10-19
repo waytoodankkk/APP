@@ -1,0 +1,7 @@
+{
+  "name": "Gemini Creative Suite",
+  "description": "An integrated suite for creative workflows using Google's Gemini and Veo models. Manage projects, generate videos and images, and brainstorm with an advanced AI chat.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
